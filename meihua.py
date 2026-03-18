@@ -1,4 +1,4 @@
-def meihuaByNumber(number: str):
+def meihua_by_number(number: str):
 
     if not number.isdigit():
         raise ValueError("参数 number 必须为数字")
@@ -19,7 +19,7 @@ def meihuaByNumber(number: str):
         mid = len(number) // 2
         upper_part = number[:mid]
         lower_part = number[mid:]
-        upper = sum(int(number) for d in upper_part)
+        upper = sum(int(d) for d in upper_part)
         lower = sum(int(d) for d in lower_part)
         moving_line = sum(int(d) for d in number)
 
@@ -71,7 +71,7 @@ def meihuaByNumber(number: str):
     full_yao = lower_yao + upper_yao
 
     # 生成本卦
-    ben_gua_name = G64(upper_pure, lower_pure)
+    ben_gua_name = gua_64(upper_pure, lower_pure)
 
     # 生成互卦（取本卦的 234 爻为下卦，345 爻为上卦）
     # 注意：full_yao 索引 0=初爻，1=二爻，2=三爻，3=四爻，4=五爻，5=上爻
@@ -90,7 +90,7 @@ def meihuaByNumber(number: str):
     hu_lower_gua = yao_to_gua(hu_lower_yao)
     hu_upper_name = bagua.get(hu_upper_gua, "未知")
     hu_lower_name = bagua.get(hu_lower_gua, "未知")
-    hu_gua_name = G64(hu_upper_name[0], hu_lower_name[0])
+    hu_gua_name = gua_64(hu_upper_name[0], hu_lower_name[0])
 
     # 生成变卦（动爻变化）
     # 动爻在第几爻就变化那一爻的阴阳
@@ -108,7 +108,7 @@ def meihuaByNumber(number: str):
     bian_lower_gua = yao_to_gua(bian_lower_yao)
     bian_upper_name = bagua.get(bian_upper_gua, "未知")
     bian_lower_name = bagua.get(bian_lower_gua, "未知")
-    bian_gua_name = G64(bian_upper_name[0], bian_lower_name[0])
+    bian_gua_name = gua_64(bian_upper_name[0], bian_lower_name[0])
 
     # 生成综卦（将本卦倒过来看，旋转 180 度）
     # 初爻变上爻，二爻变五爻，三爻变四爻，四爻变三爻，五爻变二爻，上爻变初爻
@@ -121,7 +121,7 @@ def meihuaByNumber(number: str):
     zong_lower_gua = yao_to_gua(zong_lower_yao)
     zong_upper_name = bagua.get(zong_upper_gua, "未知")
     zong_lower_name = bagua.get(zong_lower_gua, "未知")
-    zong_gua_name = G64(zong_upper_name[0], zong_lower_name[0])
+    zong_gua_name = gua_64(zong_upper_name[0], zong_lower_name[0])
 
     # 生成错卦（将本卦每个爻阴阳互换）
     cuo_yao = [1 - y for y in full_yao]  # 所有爻阴阳互换
@@ -133,7 +133,7 @@ def meihuaByNumber(number: str):
     cuo_lower_gua = yao_to_gua(cuo_lower_yao)
     cuo_upper_name = bagua.get(cuo_upper_gua, "未知")
     cuo_lower_name = bagua.get(cuo_lower_gua, "未知")
-    cuo_gua_name = G64(cuo_upper_name[0], cuo_lower_name[0])
+    cuo_gua_name = gua_64(cuo_upper_name[0], cuo_lower_name[0])
 
     # 确定体用（根据动爻位置）
     # 动爻在 1-3 爻，下卦为用，上卦为体
@@ -153,7 +153,7 @@ def meihuaByNumber(number: str):
     return result
 
 # x为上，y为下
-def G64(x, y):
+def gua_64(x, y):
     # 乾卦
     if x == '乾' and y == '乾':
         return '乾为天'

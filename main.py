@@ -4,8 +4,8 @@ from astrbot.api.event import filter, AstrMessageEvent
 from astrbot.api.star import Context, Star, register
 from astrbot.core import AstrBotConfig
 from astrbot.core.message.components import Reply, Plain
-from astrbot.core.message.message_event_result import MessageEventResult, MessageChain
-from .meihua import meihuaByNumber
+from astrbot.core.message.message_event_result import MessageChain
+from .meihua import meihua_by_number
 
 
 @register("astrbot_plugin_meihua", "985892345", "梅花易数起卦断卦工具", "0.0.1")
@@ -21,7 +21,7 @@ class MyPlugin(Star):
     @filter.command("梅花")
     async def meihua_command(self, event: AstrMessageEvent):
         """
-        /梅花 [问题] | /梅花 [2-6 个数字] [问题]
+        /梅花 [问题] | /梅花 [两个及以上数字] [问题]
         """  # 这是 handler 的描述，将会被解析方便用户了解插件内容。建议填写。
         message_str = event.message_str  # 用户发的纯文本消息字符串
 
@@ -51,22 +51,24 @@ class MyPlugin(Star):
         yield event.plain_result(result)
 
         umo = event.unified_msg_origin
-        provider_id = self.context.get_provider_by_id(
+        provider = self.context.get_provider_by_id(
             self.config.get("judge_provider_id", "")
-        ) or self.context.get_current_chat_provider_id(umo)
+        ) or self.context.get_using_provider(umo)
         divination_judgment_prompt = self.config.get("divination_judgment_prompt", "")
-        llm_resp = await self.context.llm_generate(
-            chat_provider_id=provider_id,  # 聊天模型 ID
-            prompt=f"{divination_judgment_prompt}\n{result}",
-        )
-
-        # 引用之前的卦象结果消息
-        yield event.chain_result(
-            [
-                Reply(id=event.message_obj.message_id),
-                Plain(text=llm_resp.completion_text)
-            ]
-        )
+        try:
+            llm_resp = await self.context.llm_generate(
+                chat_provider_id=provider.meta().id,  # 聊天模型 ID
+                prompt=f"{divination_judgment_prompt}\n{result}",
+            )
+            # 引用之前的卦象结果消息
+            yield event.chain_result(
+                [
+                    Reply(id=event.message_obj.message_id),
+                    Plain(text=llm_resp.completion_text)
+                ]
+            )
+        except Exception as e:
+            yield event.plain_result(f"错误：梅花插件大模型调用失败: {e}")
 
     @filter.llm_tool(name="meihua_llm")  # 如果 name 不填，将使用函数名
     async def meihua_llm(self, event: AstrMessageEvent, question: str = "未提供问题", number: str = ""):
@@ -84,7 +86,7 @@ class MyPlugin(Star):
 
     def meihua_send(self, sender_name: str, question: str, number: str):
         is_random = False
-        if not number.isdigit():
+        if not isinstance(number, str) or not number.isdigit():
             # 包含非数字字符，随机生成 3-6 位数字
             num_digits = random.randint(3, 6)
             number = ''.join([str(random.randint(0, 9)) for _ in range(num_digits)])
@@ -97,7 +99,7 @@ class MyPlugin(Star):
         result += f"起卦数字：{number}{' (随机)' if is_random else ''}\n"
         result += f"--------------------\n"
 
-        result += meihuaByNumber(number)
+        result += meihua_by_number(number)
         # 发送卦象
         return result
 
