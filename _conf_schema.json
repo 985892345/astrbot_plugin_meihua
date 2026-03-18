@@ -1,0 +1,14 @@
+{
+  "judge_provider_id": {
+    "description": "断卦使用的 LLM 提供商",
+    "type": "string",
+    "default": "",
+    "hint": "留空或者填写的提供商不存在时，则使用当前正在使用的LLM提供商",
+    "_special": "select_provider"
+  },
+  "divination_judgment_prompt": {
+    "description": "断卦提示词",
+    "type": "text",
+    "default": "你擅长各种玄学占卜，请使用梅花易数详细分析下求卦者的现状、过程、结果以及可能会发生的状况，要求 200 字以内"
+  }
+}
