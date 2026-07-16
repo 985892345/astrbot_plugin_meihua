@@ -46,7 +46,7 @@ class MyPlugin(Star):
             question = message
 
         result = self.meihua_send(event.get_sender_name(), question, number)
-        result += f"大模型断卦中...\n"
+        result += f"大模型断卦中..."
 
         yield event.plain_result(result)
 
@@ -78,7 +78,7 @@ class MyPlugin(Star):
             number(string): 数字，非必须，不传入时使用随机数断
         '''
         result = self.meihua_send(event.get_sender_name(), question, number)
-        result += f"大模型断卦中...（该模式受人格限制为精简回复，详细模式请使用 /梅花）\n"
+        result += f"大模型断卦中..."
 
         await event.send(MessageChain().message(result))
 
