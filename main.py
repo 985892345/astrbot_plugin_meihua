@@ -96,8 +96,7 @@ class MyPlugin(Star):
         result = f"🌸 梅花易数占卜 🌸\n"
         result += f"问卜者：{sender_name}\n"
         result += f"问题：{question}\n"
-        result += f"起卦数字：{number}{' (随机)' if is_random else ''}\n"
-        result += f"--------------------\n"
+        result += f"起卦数字：{number}{' (随机)' if is_random else ''}\n\n"
 
         result += meihua_by_number(number)
         # 发送卦象
